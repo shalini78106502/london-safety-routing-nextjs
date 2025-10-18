@@ -1,0 +1,20 @@
+import '../globals.css'
+import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
+
+export const metadata = {
+  title: 'London Safety Routing System',
+  description: 'Find safer routes across London'
+}
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>
+        <Navbar />
+        <main className="min-h-screen animate-fadeIn">{children}</main>
+        <Footer />
+      </body>
+    </html>
+  )
+}
