@@ -10,8 +10,12 @@ export default function Navbar() {
     <header className="bg-primary-dark/95 backdrop-blur-md text-white sticky top-0 shadow-lg z-40 border-b border-white/10">
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-            <span className="text-primary-dark font-bold">🗺️</span>
+          <div className="w-10 h-10 flex items-center justify-center">
+            <img 
+              src="/img/logo.png" 
+              alt="London Safety Routing Logo" 
+              className="w-10 h-10 object-contain"
+            />
           </div>
           <div className="text-white font-bold text-lg">London Safety Routing</div>
         </div>
