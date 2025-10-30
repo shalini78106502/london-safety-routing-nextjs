@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suggested Routes - London Safety Routing System</title>
+    
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    
+    <!-- Configure Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-dark': '#0a192f',
+                        'primary-light': '#ffffff',
+                        'accent-teal': '#64ffda',
+                        'secondary-blue': '#112240',
+                        'text-light': '#8892b0'
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Complete Embedded CSS -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary-dark: #0a192f;
+            --primary-light: #ffffff;
+            --accent-teal: #64ffda;
+            --secondary-blue: #112240;
+            --text-light: #8892b0;
+            --card-shadow: 0 10px 30px -15px rgba(2, 12, 27, 0.7);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--primary-dark);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navigation styles */
+        .navbar {
+            background: var(--primary-dark);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(100, 255, 218, 0.1);
+        }
+
+        .nav-link {
+            color: var(--primary-light);
+            transition: all 0.3s ease;
+            position: relative;
+            text-decoration: none;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-teal);
+            transform: translateY(-1px);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 50%;
+            background: var(--accent-teal);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Button styles */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary-blue));
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--secondary-blue), var(--primary-dark));
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(10, 25, 47, 0.3);
+        }
+
+        .btn-accent {
+            background: var(--accent-teal);
+            color: var(--primary-dark);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-accent:hover {
+            background: #4dd0d0;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(100, 255, 218, 0.4);
+        }
+
+        /* Hero section */
+        .hero-bg {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-blue) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="%2364ffda" stop-opacity="0.1"/><stop offset="100%" stop-color="%2364ffda" stop-opacity="0"/></radialGradient></defs><circle cx="200" cy="200" r="200" fill="url(%23a)"/><circle cx="800" cy="800" r="300" fill="url(%23a)"/></svg>') center/cover;
+            opacity: 0.3;
+        }
+
+        /* Card styles */
+        .card-custom {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(100, 255, 218, 0.1);
+        }
+
+        .card-custom:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px -10px rgba(2, 12, 27, 0.4);
+        }
+
+        .card-route {
+            min-height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-route::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-teal), #4dd0d0);
+        }
+
+        .card-fastest::before {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        }
+
+        .card-safest::before {
+            background: linear-gradient(90deg, #10b981, #34d399);
+        }
+
+        /* Input styles */
+        .input-custom {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .input-custom:focus {
+            outline: none;
+            border-color: var(--accent-teal);
+            box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.1);
+        }
+
+        /* Map placeholder */
+        .map-placeholder {
+            background: linear-gradient(45deg, #f3f4f6, #e5e7eb);
+            border: 2px dashed #9ca3af;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            font-weight: 500;
+            min-height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-placeholder::before {
+            content: '🗺️';
+            font-size: 3rem;
+            opacity: 0.5;
+        }
+
+        /* Safety score styles */
+        .safety-score {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .safety-high {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .safety-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .safety-low {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Table styles */
+        .table-custom {
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-custom th {
+            background: var(--primary-dark);
+            color: white;
+            font-weight: 600;
+            padding: 16px;
+            text-align: left;
+        }
+
+        .table-custom td {
+            padding: 16px;
+            border-bottom: 1px solid #e5e7eb;
+            background: white;
+        }
+
+        .table-custom tbody tr:nth-child(even) td {
+            background: #f9fafb;
+        }
+
+        .table-custom tbody tr:hover td {
+            background: #f0f9ff;
+        }
+
+        /* Text gradient */
+        .text-gradient {
+            background: linear-gradient(135deg, var(--accent-teal), #4dd0d0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in-left {
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Footer styles */
+        .footer {
+            background: var(--primary-dark);
+            color: var(--text-light);
+        }
+
+        .footer a {
+            color: var(--text-light);
+            transition: color 0.3s ease;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: var(--accent-teal);
+        }
+
+        /* Mobile hamburger menu */
+        .hamburger {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 3px 0;
+            transition: 0.3s;
+            border-radius: 2px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        /* Mobile nav menu */
+        .nav-mobile {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--primary-dark);
+            border-top: 1px solid rgba(100, 255, 218, 0.1);
+        }
+
+        .nav-mobile.show {
+            display: block;
+        }
+
+        /* Coming soon overlay */
+        .coming-soon {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .coming-soon::after {
+            content: 'Coming Soon';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 25, 47, 0.9);
+            color: var(--accent-teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .coming-soon:hover::after {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .hero-bg {
+                padding: 3rem 1rem;
+            }
+            .card-route {
+                min-height: 250px;
+            }
+        }
+
+        /* Utility classes - essential ones */
+        .z-50 { z-index: 50; }
+        .fixed { position: fixed; }
+        .relative { position: relative; }
+        .absolute { position: absolute; }
+        .w-full { width: 100%; }
+        .max-w-7xl { max-width: 80rem; }
+        .max-w-6xl { max-width: 72rem; }
+        .max-w-4xl { max-width: 56rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .flex { display: flex; }
+        .grid { display: grid; }
+        .hidden { display: none; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .space-x-3 > * + * { margin-left: 0.75rem; }
+        .space-x-8 > * + * { margin-left: 2rem; }
+        .gap-4 { gap: 1rem; }
+        .gap-8 { gap: 2rem; }
+        .p-6 { padding: 1.5rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+        .py-16 { padding-top: 4rem; padding-bottom: 4rem; }
+        .pt-24 { padding-top: 6rem; }
+        .pb-16 { padding-bottom: 4rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-12 { margin-bottom: 3rem; }
+        .mr-3 { margin-right: 0.75rem; }
+        .text-white { color: white; }
+        .text-center { text-align: center; }
+        .text-xl { font-size: 1.25rem; }
+        .text-2xl { font-size: 1.5rem; }
+        .text-3xl { font-size: 1.875rem; }
+        .text-4xl { font-size: 2.25rem; }
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .font-medium { font-weight: 500; }
+        .block { display: block; }
+        .inline-flex { display: inline-flex; }
+        .w-10 { width: 2.5rem; }
+        .h-10 { height: 2.5rem; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .rounded-2xl { border-radius: 1rem; }
+        .bg-accent-teal { background-color: var(--accent-teal); }
+        .bg-white { background-color: white; }
+        .bg-gray-50 { background-color: #f9fafb; }
+        .text-primary-dark { color: var(--primary-dark); }
+        .text-text-light { color: var(--text-light); }
+        .text-blue-600 { color: #2563eb; }
+        .text-green-600 { color: #16a34a; }
+        .text-gray-600 { color: #4b5563; }
+        .text-lg { font-size: 1.125rem; }
+
+        @media (min-width: 768px) {
+            .md\\:flex { display: flex; }
+            .md\\:hidden { display: none; }
+            .md\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .md\\:text-6xl { font-size: 3.75rem; }
+            .md\\:text-3xl { font-size: 1.875rem; }
+        }
+
+        @media (min-width: 1024px) {
+            .lg\\:px-8 { padding-left: 2rem; padding-right: 2rem; }
+            .lg\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+
+        .top-0 { top: 0; }
+        .border-t { border-top-width: 1px; }
+        .border-gray-200 { border-color: #e5e7eb; }
+        .mt-6 { margin-top: 1.5rem; }
+        .pt-6 { padding-top: 1.5rem; }
+        .flex-col { flex-direction: column; }
+        .space-y-1 > * + * { margin-top: 0.25rem; }
+        .text-sm { font-size: 0.875rem; }
+    </style>
+</head>
+<body class="bg-gray-50 font-inter">
+    
+    <!-- Navigation Bar -->
+    <nav class="navbar fixed w-full top-0 z-50 px-4 lg:px-8 py-4">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo/Brand -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-accent-teal rounded-lg flex items-center justify-center">
+                    <i class="fas fa-map-marked-alt text-primary-dark text-xl"></i>
+                </div>
+                <h1 class="text-white text-xl font-bold">London Safety Routing</h1>
+            </div>
+            
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="nav-link font-medium">Home</a>
+                <a href="suggested-routes.html" class="nav-link font-medium text-accent-teal">Suggested Routes</a>
+                <a href="hazard-reporting.html" class="nav-link font-medium">Hazard Reporting</a>
+                <a href="find-buddy.html" class="nav-link font-medium">Find Buddy</a>
+            </div>
+            
+            <!-- Mobile Menu Button -->
+            <button class="md:hidden hamburger" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+        
+        <!-- Mobile Navigation Menu -->
+        <div id="mobileMenu" class="nav-mobile">
+            <div class="py-4 space-y-2">
+                <a href="index.html" class="block nav-link font-medium py-2 px-4">Home</a>
+                <a href="suggested-routes.html" class="block nav-link font-medium py-2 px-4 text-accent-teal">Suggested Routes</a>
+                <a href="hazard-reporting.html" class="block nav-link font-medium py-2 px-4">Hazard Reporting</a>
+                <a href="find-buddy.html" class="block nav-link font-medium py-2 px-4">Find Buddy</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Header Banner with Search -->
+    <section class="hero-bg pt-24 pb-16">
+        <div class="max-w-6xl mx-auto px-4 text-center text-white">
+            <div class="fade-in">
+                <h1 class="text-4xl md:text-6xl font-bold mb-4">
+                    Find the <span class="text-gradient">Safest Route</span>
+                </h1>
+                <h2 class="text-2xl md:text-3xl mb-12 text-text-light">Across London</h2>
+                
+                <!-- Search Form -->
+                <div class="bg-white rounded-2xl p-6 max-w-4xl mx-auto shadow-2xl">
+                    <div class="grid md:grid-cols-3 gap-4 items-end">
+                        <!-- From Input -->
+                        <div class="text-left">
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                <i class="fas fa-map-marker-alt text-green-600 mr-2"></i>
+                                From
+                            </label>
+                            <input 
+                                type="text" 
+                                class="input-custom w-full" 
+                                placeholder="Enter starting location"
+                                value="Kings Cross Station"
+                            >
+                        </div>
+                        
+                        <!-- To Input -->
+                        <div class="text-left">
+                            <label class="block text-gray-700 font-semibold mb-2">
+                                <i class="fas fa-map-marker-alt text-red-600 mr-2"></i>
+                                To
+                            </label>
+                            <input 
+                                type="text" 
+                                class="input-custom w-full" 
+                                placeholder="Enter destination"
+                                value="Tower Bridge"
+                            >
+                        </div>
+                        
+                        <!-- Search Button -->
+                        <div>
+                            <button class="btn-accent w-full px-6 py-3 rounded-lg font-semibold text-lg inline-flex items-center justify-center space-x-2">
+                                <i class="fas fa-search"></i>
+                                <span>Find Routes</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Travel Options -->
+                    <div class="flex justify-center space-x-6 mt-6 pt-6 border-t border-gray-200">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="transport" value="walking" checked class="mr-2">
+                            <i class="fas fa-walking text-gray-600 mr-2"></i>
+                            <span class="text-gray-700">Walking</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="transport" value="cycling" class="mr-2">
+                            <i class="fas fa-bicycle text-gray-600 mr-2"></i>
+                            <span class="text-gray-700">Cycling</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Route Results Section -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-primary-dark mb-4">Route Comparison</h2>
+                <p class="text-lg text-gray-600">Choose between the fastest route or our AI-recommended safest path</p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Fastest Route Card -->
+                <div class="card-custom card-route card-fastest p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-bold text-blue-600 flex items-center">
+                            <i class="fas fa-bolt mr-3"></i>
+                            Fastest Route
+                        </h3>
+                        <span class="safety-score safety-medium">Safety: 7.2/10</span>
+                    </div>
+                    
+                    <!-- Map Placeholder -->
+                    <div class="map-placeholder mb-6">
+                        <div class="text-center">
+                            <div class="text-4xl mb-2">🗺️</div>
+                            <p class="text-gray-500">Interactive map coming soon</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Route Details -->
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-blue-600 mb-1">2.4 km</div>
+                            <div class="text-sm text-gray-600">Distance</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-blue-600 mb-1">28 min</div>
+                            <div class="text-sm text-gray-600">Duration</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-blue-600 mb-1">4</div>
+                            <div class="text-sm text-gray-600">Hazards</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Route Highlights -->
+                    <div class="bg-blue-50 p-4 rounded-lg mb-6">
+                        <h4 class="font-semibold text-blue-800 mb-2">Route Highlights:</h4>
+                        <ul class="text-sm text-blue-700 space-y-1">
+                            <li>• Direct path via Euston Road</li>
+                            <li>• Well-lit main streets</li>
+                            <li>• Busy pedestrian areas</li>
+                            <li>• 2 road crossings</li>
+                        </ul>
+                    </div>
+                    
+                    <button class="btn-primary w-full py-3 rounded-lg font-semibold text-white inline-flex items-center justify-center space-x-2 coming-soon">
+                        <i class="fas fa-directions"></i>
+                        <span>Get Directions</span>
+                    </button>
+                </div>
+                
+                <!-- Safest Route Card -->
+                <div class="card-custom card-route card-safest p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-2xl font-bold text-green-600 flex items-center">
+                            <i class="fas fa-shield-alt mr-3"></i>
+                            Safest Route
+                            <span class="ml-2 text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">Recommended</span>
+                        </h3>
+                        <span class="safety-score safety-high">Safety: 9.4/10</span>
+                    </div>
+                    
+                    <!-- Map Placeholder -->
+                    <div class="map-placeholder mb-6">
+                        <div class="text-center">
+                            <div class="text-4xl mb-2">🗺️</div>
+                            <p class="text-gray-500">Interactive map coming soon</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Route Details -->
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-green-600 mb-1">2.8 km</div>
+                            <div class="text-sm text-gray-600">Distance</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-green-600 mb-1">35 min</div>
+                            <div class="text-sm text-gray-600">Duration</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-green-600 mb-1">1</div>
+                            <div class="text-sm text-gray-600">Hazards</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Route Highlights -->
+                    <div class="bg-green-50 p-4 rounded-lg mb-6">
+                        <h4 class="font-semibold text-green-800 mb-2">Route Highlights:</h4>
+                        <ul class="text-sm text-green-700 space-y-1">
+                            <li>• Parks and green spaces</li>
+                            <li>• CCTV monitored areas</li>
+                            <li>• Low crime density</li>
+                            <li>• Well-maintained paths</li>
+                        </ul>
+                    </div>
+                    
+                    <button class="btn-accent w-full py-3 rounded-lg font-semibold inline-flex items-center justify-center space-x-2 coming-soon">
+                        <i class="fas fa-directions"></i>
+                        <span>Get Directions</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Safety Breakdown Panel -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-primary-dark mb-4">Safety Analysis</h2>
+                <p class="text-lg text-gray-600">Detailed comparison of safety factors between routes</p>
+            </div>
+            
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <table class="table-custom w-full">
+                    <thead>
+                        <tr>
+                            <th class="text-left">Safety Factor</th>
+                            <th class="text-center">Fastest Route</th>
+                            <th class="text-center">Safest Route</th>
+                            <th class="text-center">Impact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-semibold">
+                                <i class="fas fa-mask text-red-500 mr-2"></i>
+                                Crime Density
+                            </td>
+                            <td class="text-center">
+                                <span class="safety-score safety-medium">Medium</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="safety-score safety-high">Low</span>
+                            </td>
+                            <td class="text-center text-green-600 font-semibold">+15%</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">
+                                <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                                Lighting Index
+                            </td>
+                            <td class="text-center">
+                                <span class="safety-score safety-high">Good</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="safety-score safety-high">Excellent</span>
+                            </td>
+                            <td class="text-center text-green-600 font-semibold">+8%</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">
+                                <i class="fas fa-exclamation-triangle text-orange-500 mr-2"></i>
+                                Reported Hazards
+                            </td>
+                            <td class="text-center">
+                                <span class="safety-score safety-low">4 Active</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="safety-score safety-high">1 Active</span>
+                            </td>
+                            <td class="text-center text-green-600 font-semibold">+12%</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">
+                                <i class="fas fa-road text-blue-500 mr-2"></i>
+                                Infrastructure Quality
+                            </td>
+                            <td class="text-center">
+                                <span class="safety-score safety-medium">Standard</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="safety-score safety-high">Premium</span>
+                            </td>
+                            <td class="text-center text-green-600 font-semibold">+10%</td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold">
+                                <i class="fas fa-video text-purple-500 mr-2"></i>
+                                CCTV Coverage
+                            </td>
+                            <td class="text-center">
+                                <span class="safety-score safety-medium">Partial</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="safety-score safety-high">Full</span>
+                            </td>
+                            <td class="text-center text-green-600 font-semibold">+18%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Safety Tips -->
+            <div class="mt-12 bg-gradient-to-r from-primary-dark to-secondary-blue rounded-2xl p-8 text-white">
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-lightbulb text-accent-teal mr-3"></i>
+                            Safety Tips
+                        </h3>
+                        <ul class="space-y-3 text-text-light">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-accent-teal mt-1 mr-3 flex-shrink-0"></i>
+                                Stay on well-lit paths, especially during evening hours
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-accent-teal mt-1 mr-3 flex-shrink-0"></i>
+                                Keep your phone charged and share your route with friends
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-accent-teal mt-1 mr-3 flex-shrink-0"></i>
+                                Trust your instincts and report any suspicious activity
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-accent-teal mt-1 mr-3 flex-shrink-0"></i>
+                                Consider traveling with a buddy for added safety
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-6xl mb-4">🛡️</div>
+                        <h4 class="text-xl font-semibold mb-2">Stay Safe, London!</h4>
+                        <p class="text-text-light">Your safety is our priority</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Export Section -->
+    <section class="py-16 bg-white">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold text-primary-dark mb-6">Export & Share</h2>
+            <p class="text-lg text-gray-600 mb-8">Save your route or share it with friends and family</p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <button class="btn-primary px-8 py-4 rounded-lg font-semibold text-lg text-white inline-flex items-center space-x-2 w-full sm:w-auto justify-center coming-soon">
+                    <i class="fas fa-download"></i>
+                    <span>Export Route Summary</span>
+                </button>
+                
+                <button class="btn-accent px-8 py-4 rounded-lg font-semibold text-lg inline-flex items-center space-x-2 w-full sm:w-auto justify-center coming-soon">
+                    <i class="fas fa-share-alt"></i>
+                    <span>Share Route</span>
+                </button>
+                
+                <a href="find-buddy.html" class="border-2 border-primary-dark text-primary-dark px-8 py-4 rounded-lg font-semibold text-lg inline-flex items-center space-x-2 w-full sm:w-auto justify-center hover:bg-primary-dark hover:text-white transition-colors">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Find Travel Buddy</span>
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer py-12">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <!-- Brand -->
+                <div class="col-span-2">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-accent-teal rounded-lg flex items-center justify-center">
+                            <i class="fas fa-map-marked-alt text-primary-dark text-xl"></i>
+                        </div>
+                        <h3 class="text-white text-xl font-bold">London Safety Routing</h3>
+                    </div>
+                    <p class="text-text-light mb-6 max-w-md">
+                        Empowering safer journeys across London through intelligent routing, community insights, and real-time hazard awareness.
+                    </p>
+                    
+                    <!-- Social Links -->
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-secondary-blue rounded-lg flex items-center justify-center hover:bg-accent-teal hover:text-primary-dark transition-colors">
+                            <i class="fab fa-linkedin text-lg"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-secondary-blue rounded-lg flex items-center justify-center hover:bg-accent-teal hover:text-primary-dark transition-colors">
+                            <i class="fab fa-github text-lg"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-secondary-blue rounded-lg flex items-center justify-center hover:bg-accent-teal hover:text-primary-dark transition-colors">
+                            <i class="fab fa-twitter text-lg"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Quick Links</h4>
+                    <div class="space-y-2">
+                        <a href="suggested-routes.html" class="block hover:text-accent-teal transition-colors">Suggested Routes</a>
+                        <a href="hazard-reporting.html" class="block hover:text-accent-teal transition-colors">Report Hazard</a>
+                        <a href="find-buddy.html" class="block hover:text-accent-teal transition-colors">Find Buddy</a>
+                        <a href="#" class="block hover:text-accent-teal transition-colors">Safety Tips</a>
+                    </div>
+                </div>
+                
+                <!-- Legal -->
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Legal</h4>
+                    <div class="space-y-2">
+                        <a href="#" class="block hover:text-accent-teal transition-colors">Privacy Policy</a>
+                        <a href="#" class="block hover:text-accent-teal transition-colors">Terms of Service</a>
+                        <a href="#" class="block hover:text-accent-teal transition-colors">Contact Us</a>
+                        <a href="#" class="block hover:text-accent-teal transition-colors">Support</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Bar -->
+            <div class="border-t border-secondary-blue mt-8 pt-8 text-center text-text-light">
+                <p>&copy; 2025 London Safety Routing System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script>
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const hamburger = document.querySelector('.hamburger');
+            
+            mobileMenu.classList.toggle('show');
+            hamburger.classList.toggle('active');
+        }
+        
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-mobile a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobileMenu').classList.remove('show');
+                document.querySelector('.hamburger').classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>

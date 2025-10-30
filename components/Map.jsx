@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
@@ -12,6 +12,19 @@ L.Icon.Default.mergeOptions({
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 })
+
+// Component to handle map clicks
+function MapClickHandler({ onMapClick }) {
+  const map = useMapEvents({
+    click(e) {
+      if (onMapClick) {
+        onMapClick(e.latlng)
+      }
+    }
+  })
+  
+  return null
+}
 
 // Component to handle routing
 function RoutingController({ fromCoords, toCoords, onRouteFound, showRouting = false }) {
@@ -90,7 +103,8 @@ export default function Map({
   onRouteClick = () => {},
   onHazardClick = () => {},
   onBuddyClick = () => {},
-  onRouteFound = () => {}
+  onRouteFound = () => {},
+  onMapClick = null
 }) {
   // Create custom icons
   const createCustomIcon = (color, type) => {
@@ -131,6 +145,9 @@ export default function Map({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        
+        {/* Map Click Handler */}
+        {onMapClick && <MapClickHandler onMapClick={onMapClick} />}
         
         {/* Routing Controller */}
         <RoutingController 
@@ -192,7 +209,7 @@ export default function Map({
         ))}
 
         {/* Hazards */}
-        {hazards.map((hazard) => (
+        {hazards.filter(hazard => hazard.latitude && hazard.longitude).map((hazard) => (
           <Marker
             key={hazard.id}
             position={[hazard.latitude, hazard.longitude]}
@@ -203,10 +220,10 @@ export default function Map({
           >
             <Popup>
               <div className="text-sm">
-                <h3 className="font-semibold">{hazard.type}</h3>
+                <h3 className="font-semibold">{hazard.hazardType || hazard.type}</h3>
                 <p>{hazard.description}</p>
                 <p className="text-xs text-gray-500">
-                  Reported: {new Date(hazard.reportedAt).toLocaleDateString()}
+                  Reported: {new Date(hazard.reportedAt || hazard.createdAt).toLocaleDateString()}
                 </p>
               </div>
             </Popup>
@@ -236,7 +253,7 @@ export default function Map({
         ))}
 
         {/* Custom Markers */}
-        {markers.map((marker, index) => (
+        {markers.filter(marker => marker.position && marker.position[0] && marker.position[1]).map((marker, index) => (
           <Marker
             key={index}
             position={marker.position}
